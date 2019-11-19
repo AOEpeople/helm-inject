@@ -60,6 +60,9 @@ type upgradeCmd struct {
 	tlsCert string
 	tlsKey  string
 
+	resetValues bool
+	force       bool
+
 	out io.Writer
 }
 
@@ -140,6 +143,8 @@ func NewUpgradeCommand(out io.Writer) *cobra.Command {
 				tls:         u.tls,
 				tlsCert:     u.tlsCert,
 				tlsKey:      u.tlsKey,
+				resetValues: u.resetValues,
+				force:       u.force,
 			}
 			if err := upgrade(upgradeOptions); err != nil {
 				fmt.Println(err)
@@ -166,6 +171,9 @@ func NewUpgradeCommand(out io.Writer) *cobra.Command {
 	f.BoolVar(&u.tls, "tls", false, "enable TLS for request")
 	f.StringVar(&u.tlsCert, "tls-cert", "", "path to TLS certificate file (default: $HELM_HOME/cert.pem)")
 	f.StringVar(&u.tlsKey, "tls-key", "", "path to TLS key file (default: $HELM_HOME/key.pem)")
+
+	f.BoolVar(&u.resetValues, "reset-values", false, "When upgrading, reset the values to the ones built into the chart")
+	f.BoolVar(&u.force, "force", false, "Force resource update through delete/recreate if needed")
 
 	return cmd
 }
@@ -313,6 +321,8 @@ type upgradeOptions struct {
 	tlsCert     string
 	tlsKey      string
 	kubeConfig  string
+	resetValues bool
+	force       bool
 }
 
 func upgrade(o upgradeOptions) error {
@@ -343,6 +353,12 @@ func upgrade(o upgradeOptions) error {
 	}
 	if o.tlsKey != "" {
 		additionalFlags += createFlagChain("tls-key", []string{o.tlsKey})
+	}
+	if o.resetValues {
+		additionalFlags += createFlagChain("reset-values", []string{""})
+	}
+	if o.force {
+		additionalFlags += createFlagChain("force", []string{""})
 	}
 
 	command := fmt.Sprintf("helm upgrade %s %s%s", o.name, o.chart, additionalFlags)
