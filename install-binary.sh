@@ -8,16 +8,18 @@ if [ -n "${HELM_PUSH_PLUGIN_NO_INSTALL_HOOK}" ]; then
     exit 0
 fi
 
-version="$(curl -s https://api.github.com/repos/maorfr/helm-inject/releases/latest | awk '/\"tag_name\":/{gsub( /[,\"]/,"", $2); print $2}')"
+HELM_INJECT_GITHUB_REPO="${HELM_INJECT_GITHUB_REPO:-maorfr/helm-inject}"
+
+version="$(curl -s https://api.github.com/repos/${HELM_INJECT_GITHUB_REPO}/releases/latest | awk '/\"tag_name\":/{gsub( /[,\"]/,"", $2); print $2}')"
 echo "Downloading and installing helm-inject ${version} ..."
 
 url=""
 if [ "$(uname)" = "Darwin" ]; then
-    url="https://github.com/maorfr/helm-inject/releases/download/${version}/helm-inject-macos-${version}.tgz"
+    url="https://github.com/${HELM_INJECT_GITHUB_REPO}/releases/download/${version}/helm-inject-macos-${version}.tgz"
 elif [ "$(uname)" = "Linux" ] ; then
-    url="https://github.com/maorfr/helm-inject/releases/download/${version}/helm-inject-linux-${version}.tgz"
+    url="https://github.com/${HELM_INJECT_GITHUB_REPO}/releases/download/${version}/helm-inject-linux-${version}.tgz"
 else
-    url="https://github.com/maorfr/helm-inject/releases/download/${version}/helm-inject-windows-${version}.tgz"
+    url="https://github.com/${HELM_INJECT_GITHUB_REPO}/releases/download/${version}/helm-inject-windows-${version}.tgz"
 fi
 
 echo $url

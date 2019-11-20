@@ -267,7 +267,13 @@ func template(o templateOptions) error {
 		if err != nil || len(stderr) != 0 {
 			return fmt.Errorf(string(stderr))
 		}
-		if err := ioutil.WriteFile(file, stdout, 0644); err != nil {
+		// Prevent duplicate rendering
+		if err := ioutil.WriteFile(file+".tmp", stdout, 0644); err != nil {
+			return err
+		}
+	}
+	for _, file := range o.files {
+		if err := os.Rename(file+".tmp", file); err != nil {
 			return err
 		}
 	}
