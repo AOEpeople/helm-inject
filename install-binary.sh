@@ -8,7 +8,8 @@ if [ -n "${HELM_PUSH_PLUGIN_NO_INSTALL_HOOK}" ]; then
     exit 0
 fi
 
-HELM_INJECT_GITHUB_REPO="${HELM_INJECT_GITHUB_REPO:-maorfr/helm-inject}"
+#HELM_INJECT_GITHUB_REPO="${HELM_INJECT_GITHUB_REPO:-maorfr/helm-inject}"
+HELM_INJECT_GITHUB_REPO="${HELM_INJECT_GITHUB_REPO:-aoepeople/helm-inject}"
 
 version="$(curl -s https://api.github.com/repos/${HELM_INJECT_GITHUB_REPO}/releases/latest | awk '/\"tag_name\":/{gsub( /[,\"]/,"", $2); print $2}')"
 echo "Downloading and installing helm-inject ${version} ..."
